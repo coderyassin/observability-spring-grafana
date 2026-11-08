@@ -1,6 +1,5 @@
 package net.youssfi.observabilityspringgrafana.web;
 
-import io.micrometer.observation.annotation.Observed;
 import net.youssfi.observabilityspringgrafana.entities.Product;
 import net.youssfi.observabilityspringgrafana.model.Post;
 import net.youssfi.observabilityspringgrafana.repository.ProductRepository;
@@ -16,8 +15,8 @@ import java.util.List;
  **/
 @RestController
 public class ProductController {
-    private ProductRepository productRepository;
-    private RestClient restClient;
+    private final ProductRepository productRepository;
+    private final RestClient restClient;
 
     public ProductController(ProductRepository productRepository,
                              RestClient.Builder restClient) {
@@ -37,6 +36,7 @@ public class ProductController {
         return restClient.get()
                 .uri("/posts")
                 .retrieve()
-                .body(new ParameterizedTypeReference<List<Post>>() {});
+                .body(new ParameterizedTypeReference<>() {
+                });
     }
 }

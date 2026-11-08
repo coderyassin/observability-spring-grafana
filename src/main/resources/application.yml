@@ -1,0 +1,64 @@
+server:
+  port: '8009'
+
+spring:
+  h2:
+    console:
+      enabled: 'true'
+  datasource:
+    url: jdbc:h2:mem:products-db
+  application:
+    name: observability-spring-grafana
+
+logging:
+  file:
+    name: ${LOG_FILE_NAME:/opt/observability-my/logs/application.log}
+  logback:
+    rollingpolicy:
+      max-history: 30
+      max-file-size: 20MB
+      total-size-cap: 1GB
+      file-name-pattern: /opt/observability-my/logs/application.%d{yyyy-MM-dd}.%i.log.gz
+  level:
+    root: INFO
+    net.youssfi.observabilityspringgrafana: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+          - metrics
+
+  endpoint:
+    health:
+      access: unrestricted
+      show-details: always
+    prometheus:
+      access: unrestricted
+      show-details: always
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${APP_ENV:dev}
+
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        http.server.requests: 100ms, 300ms, 500ms, 1s, 2s
+
+# Springdoc Configuration
+springdoc:
+  default-produces-media-type: application/json
+  swagger-ui:
+    enabled: true
+    operations-sorter: true
+    tags-sorter: alpha
